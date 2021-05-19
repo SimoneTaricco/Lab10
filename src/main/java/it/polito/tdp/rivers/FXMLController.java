@@ -8,6 +8,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.rivers.model.Model;
+import it.polito.tdp.rivers.model.River;
+import it.polito.tdp.rivers.model.Simulator;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -17,6 +20,7 @@ import javafx.scene.control.TextField;
 public class FXMLController {
 	
 	private Model model;
+	private Simulator simulator;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -25,7 +29,7 @@ public class FXMLController {
     private URL location;
 
     @FXML // fx:id="boxRiver"
-    private ComboBox<?> boxRiver; // Value injected by FXMLLoader
+    private ComboBox<River> boxRiver; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtStartDate"
     private TextField txtStartDate; // Value injected by FXMLLoader
@@ -47,6 +51,25 @@ public class FXMLController {
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
+    
+    @FXML
+    void doSimula(ActionEvent event) {
+    	
+    	try {   		
+    	Double k = Double.parseDouble(this.txtK.getText());
+    	Double fmedio = Double.parseDouble(this.txtFMed.getText());	
+    	
+    	this.simulator.setParam(k, fmedio, this.boxRiver.getValue());
+    	this.simulator.run();
+    	
+    	this.txtResult.setText("Numero di giorni in cui non si è potuta garantire l’erogazione minima: \n" + simulator.getGiorniDisservizio() + 
+    			"\nOccupazione media del bacino: " + simulator.getOccupMedia());
+    	
+    	}catch (Exception e){
+    		txtResult.setText("Errore");
+    	}
+
+    }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
@@ -62,5 +85,18 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.simulator = new Simulator();
+    	this.boxRiver.getItems().addAll(model.getAllRivers());
     }
+    
+    public void riverInfo(ActionEvent event) {
+    	if (this.boxRiver.getValue() != null) {
+    		this.txtFMed.setText("" + this.model.getAvgFlows(this.model.getAllFlows(this.boxRiver.getValue())));
+    		this.txtStartDate.setText("" + this.model.getAllFlows(this.boxRiver.getValue()).get(0).getDay());
+    		this.txtEndDate.setText("" + this.model.getAllFlows(this.boxRiver.getValue()).get(this.model.getAllFlows(this.boxRiver.getValue()).size()-1).getDay());
+    		this.txtNumMeasurements.setText("" + this.model.getAllFlows(this.boxRiver.getValue()).size());
+    	}
+    }
+    
+
 }
