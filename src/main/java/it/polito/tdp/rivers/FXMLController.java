@@ -63,7 +63,7 @@ public class FXMLController {
     	this.simulator.run();
     	
     	this.txtResult.setText("Numero di giorni in cui non si è potuta garantire l’erogazione minima: \n" + simulator.getGiorniDisservizio() + 
-    			"\nOccupazione media del bacino: " + simulator.getOccupMedia());
+    			"\nOccupazione media del bacino: " + simulator.getOccupMedia()/86400 + " m^3/giorno.");
     	
     	}catch (Exception e){
     		txtResult.setText("Errore");

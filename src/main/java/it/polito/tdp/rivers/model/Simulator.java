@@ -8,7 +8,6 @@ import it.polito.tdp.rivers.model.Event.EventType;
 public class Simulator {
 	
 	private Model model;
-	private River r;
 	private final static Integer CONV_TAX = 86400; // per la conversione
 	
 	public Simulator() {
@@ -20,6 +19,7 @@ public class Simulator {
 	
 	// parametri in input
 	private Double Q;
+	private River river;
 	
 	// stato del sistema
 	private Double C; 			// capienza attuale	
@@ -29,14 +29,13 @@ public class Simulator {
 	// valori da simulazione
 	private double occupMedia;
 	private int giorniNonMinima;
-	
-	
+		
 	public void setParam(Double k, double fmedio, River river) {
 		
 		this.Q = k*fmedio*30*CONV_TAX;			// capacità massima
 		this.C = Q/2;              			// capacità attuale           
 		this.f_out_min = 0.8*fmedio*CONV_TAX;  // se C + quello che entra è maggiore di questo, rimane la differenza, altrimenti si svuota tutto
-		this.r = river;
+		this.river = river;
 	}
 	
 	
@@ -49,7 +48,7 @@ public class Simulator {
 		this.giorniNonMinima = 0;
 		
 		// popolazione della coda
-		for(Flow f:model.getAllFlows(r)) {
+		for(Flow f:model.getAllFlows(river)) {
 			this.queue.add(new Event(f.getDay(), EventType.INGRESSO, f.getFlow()*CONV_TAX)); 
 		}
 		
