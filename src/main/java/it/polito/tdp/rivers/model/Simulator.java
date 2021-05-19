@@ -1,6 +1,7 @@
 package it.polito.tdp.rivers.model;
 
 
+import java.util.List;
 import java.util.PriorityQueue;
 
 import it.polito.tdp.rivers.model.Event.EventType;
@@ -10,32 +11,30 @@ public class Simulator {
 	private Model model;
 	private final static Integer CONV_TAX = 86400; // per la conversione
 	
-	public Simulator() {
-		this.model = new Model();
-	}
-	
 	// coda
 	private PriorityQueue<Event> queue;	
 	
 	// parametri in input
 	private Double Q;
 	private River river;
+	private List<Flow> flows;
 	
 	// stato del sistema
 	private Double C; 			// capienza attuale	
 	private Double f_out_min;
-	private Double f_out_provv; 		// provvisoria, per irrigazione
+	private Double f_out_provv; // provvisoria, per irrigazione
 	
 	// valori da simulazione
 	private double occupMedia;
 	private int giorniNonMinima;
 		
-	public void setParam(Double k, double fmedio, River river) {
+	public void setParam(Double k, double fmedio, River river, List<Flow> list) {
 		
 		this.Q = k*fmedio*30*CONV_TAX;			// capacità massima
-		this.C = Q/2;              			// capacità attuale           
-		this.f_out_min = 0.8*fmedio*CONV_TAX;  // se C + quello che entra è maggiore di questo, rimane la differenza, altrimenti si svuota tutto
+		this.C = Q/2;              				// capacità attuale           
+		this.f_out_min = 0.8*fmedio*CONV_TAX;  	// se C + quello che entra è maggiore di questo, rimane la differenza, altrimenti si svuota tutto
 		this.river = river;
+		this.flows = list;
 	}
 	
 	
@@ -48,7 +47,7 @@ public class Simulator {
 		this.giorniNonMinima = 0;
 		
 		// popolazione della coda
-		for(Flow f:model.getAllFlows(river)) {
+		for(Flow f:flows) {
 			this.queue.add(new Event(f.getDay(), EventType.INGRESSO, f.getFlow()*CONV_TAX)); 
 		}
 		
@@ -67,8 +66,8 @@ public class Simulator {
 			
 			this.C += e.getFlow(); //capienza corrente con flusso del giorno
 			
-			if(this.C > this.Q) //tracimazione
-				this.queue.add(new Event(e.getDate(), EventType.TRACIMAZIONE, e.getFlow()));
+			if(this.C > this.Q)
+				this.queue.add(new Event(e.getDate(), EventType.TRACIMAZIONE, e.getFlow()));			
 			
 			//probabilità aggiuntiva
 			int p = (int) (Math.random()*100);

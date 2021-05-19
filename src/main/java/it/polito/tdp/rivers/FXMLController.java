@@ -20,7 +20,6 @@ import javafx.scene.control.TextField;
 public class FXMLController {
 	
 	private Model model;
-	private Simulator simulator;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -59,11 +58,10 @@ public class FXMLController {
     	Double k = Double.parseDouble(this.txtK.getText());
     	Double fmedio = Double.parseDouble(this.txtFMed.getText());	
     	
-    	this.simulator.setParam(k, fmedio, this.boxRiver.getValue());
-    	this.simulator.run();
+    	this.model.esegui(k, fmedio, this.boxRiver.getValue());
     	
-    	this.txtResult.setText("Numero di giorni in cui non si è potuta garantire l’erogazione minima: \n" + simulator.getGiorniDisservizio() + 
-    			"\nOccupazione media del bacino: " + simulator.getOccupMedia()/86400 + " m^3/giorno.");
+    	this.txtResult.setText("Numero di giorni in cui non si è potuta garantire l’erogazione minima: \n" + model.getGiorniDisservizio() + 
+    			"\nOccupazione media del bacino: " + model.getOccupMedia() + " m^3/giorno.");
     	
     	}catch (Exception e){
     		txtResult.setText("Errore");
@@ -85,7 +83,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
-    	this.simulator = new Simulator();
     	this.boxRiver.getItems().addAll(model.getAllRivers());
     }
     

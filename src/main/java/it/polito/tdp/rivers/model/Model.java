@@ -9,10 +9,12 @@ public class Model {
 	
 	private RiversDAO dao;
 	private List<Flow> flows;
+	private Simulator sim;
 
 	public Model() {
 		super();
 		dao = new RiversDAO();
+		sim = new Simulator();
 	}
 	
 	public List<River> getAllRivers(){
@@ -35,6 +37,19 @@ public class Model {
 			res += f.getFlow();
 		
 		return res/list.size();
+	}
+
+	public void esegui(Double k, Double fmedio, River river) {	
+    	this.sim.setParam(k, fmedio, river, this.flows);
+    	this.sim.run();		
+	}
+	
+	public int getGiorniDisservizio() {	
+    	return this.sim.getGiorniDisservizio();	
+	}
+	
+	public Double getOccupMedia() {	
+    	return this.sim.getOccupMedia()/86400;	
 	}
 
 

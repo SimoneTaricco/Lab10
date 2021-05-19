@@ -1,7 +1,6 @@
 package it.polito.tdp.rivers.model;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class Event implements Comparable<Event>{
 	
